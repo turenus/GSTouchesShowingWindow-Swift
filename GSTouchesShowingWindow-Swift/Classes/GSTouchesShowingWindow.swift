@@ -16,41 +16,41 @@ public struct TouchAppearance {
 }
 
 public class GSTouchesShowingWindow: UIWindow {
-  
-  var showTouchesEnabled = false
-  lazy var controller = GSTouchesShowingController()    // lets not consume any resources if not required
-  
-  var touchAppearance:TouchAppearance {
-    get {
-      return controller.appearance
+    
+    var showTouchesEnabled = false
+    lazy var controller = GSTouchesShowingController()    // lets not consume any resources if not required
+    
+    var touchAppearance:TouchAppearance {
+        get {
+            return controller.appearance
+        }
+        set(appearance) {
+            controller.appearance = appearance
+        }
     }
-    set(appearance) {
-      controller.appearance = appearance
-    }
-  }
     
     override public func sendEvent(_ event: UIEvent) {
-      
-      // if not showing touches, default to super behaviour
-      guard self.showTouchesEnabled else {
-        return super.sendEvent(event)
-      }
-      let touches = event.allTouches
-      for touch in touches! {
-          switch touch.phase {
-          case .began:
-              self.controller.touchBegan(touch, view: self)
-              
-          case .moved:
-              self.controller.touchMoved(touch, view: self)
-              
-          case .ended, .cancelled:
-              self.controller.touchEnded(touch, view: self)
-          
-          default:
-              break
-          }
-      }
-      super.sendEvent(event)
+        
+        // if not showing touches, default to super behaviour
+        guard self.showTouchesEnabled else {
+            return super.sendEvent(event)
+        }
+        let touches = event.allTouches
+        for touch in touches! {
+            switch touch.phase {
+            case .began:
+                self.controller.touchBegan(touch, view: self)
+                
+            case .moved:
+                self.controller.touchMoved(touch, view: self)
+                
+            case .ended, .cancelled:
+                self.controller.touchEnded(touch, view: self)
+                
+            default:
+                break
+            }
+        }
+        super.sendEvent(event)
     }
 }
