@@ -33,8 +33,8 @@ public class GSTouchesShowingWindow: UIWindow {
         defer { super.sendEvent(event) }
         // if not showing touches, default to super behaviour
         guard self.showTouchesEnabled else { return }
-        let touches = event.allTouches
-        for touch in touches! {
+        guard let touches = event.allTouches else { return }
+        for touch in touches {
             switch touch.phase {
             case .began:
                 self.controller.touchBegan(touch, view: self)
