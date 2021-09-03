@@ -137,6 +137,7 @@ class GSTouchViewQueue {
     }
     
     func popTouchView() -> UIView {
+        guard backingArray.count > 0 else { return createTouchView() }
         return backingArray.removeFirst()
     }
     
