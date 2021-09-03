@@ -16,7 +16,7 @@ class GSTouchesShowingController {
     var appearance:TouchAppearance = TouchAppearance()
     
     public func touchBegan(_ touch: UITouch, view: UIView) -> Void {
-        let touchView = self.touchViewQueue.popTouchView()
+        let touchView = touchViewQueue.popTouchView()
         touchView.frame = CGRect(x: 0, y: 0, width: appearance.shortTapFinalCircleRadius, height: appearance.shortTapFinalCircleRadius )
         touchView.layer.cornerRadius = touchView.bounds.size.width / 2.0
         touchView.center = touch.location(in: view)
@@ -25,38 +25,38 @@ class GSTouchesShowingController {
         
         touchView.alpha = 0.0
         touchView.transform = CGAffineTransform(scaleX: 1.13, y: 1.13)
-        self.setTouchView(touchView, for: touch)
+        setTouchView(touchView, for: touch)
         
         UIView.animate(withDuration: 0.1) { 
             touchView.alpha = 1.0
             touchView.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
         
-        self.touchesStartDateMapTable.setObject(NSDate(), forKey: touch)
+        touchesStartDateMapTable.setObject(NSDate(), forKey: touch)
     }
     
     public func touchMoved(_ touch: UITouch, view: UIView) -> Void {
-        self.touchView(for: touch).center = touch.location(in: view)
+        touchView(for: touch).center = touch.location(in: view)
     }
     
     public func touchEnded(_ touch: UITouch, view: UIView) -> Void {
-        let touchStartDate = self.touchesStartDateMapTable.object(forKey: touch)
+        let touchStartDate = touchesStartDateMapTable.object(forKey: touch)
         let touchDuration = NSDate().timeIntervalSince(touchStartDate! as Date)
-        self.touchesStartDateMapTable.removeObject(forKey: touch)
+        touchesStartDateMapTable.removeObject(forKey: touch)
         
         if touchDuration < appearance.shortTapTresholdDuration {
-            self.showExpandingCircle(at: touch.location(in: view), in: view)
+            showExpandingCircle(at: touch.location(in: view), in: view)
         }
         
-        let touchView = self.touchView(for: touch)
+        let touchView = touchView(for: touch)
         UIView.animate(withDuration: 0.1, animations: { 
             touchView.alpha = 0.0
             touchView.transform = CGAffineTransform(scaleX: 1.13, y: 1.13)
-        }) { (completed) in
+        }) { [unowned self] (completed) in
             touchView.removeFromSuperview()
             touchView.alpha = 1.0
-            self.touchViewQueue.push(touchView)
-            self.removeTouchView(for: touch)
+            touchViewQueue.push(touchView)
+            removeTouchView(for: touch)
         }
     }
     
@@ -109,15 +109,15 @@ class GSTouchesShowingController {
     }
     
     func touchView(for touch: UITouch) -> UIView {
-        return self.touchViewsDict["\(touch.hash)"]!
+        return touchViewsDict["\(touch.hash)"]!
     }
     
     func setTouchView(_ touchView: UIView, for touch: UITouch) {
-        self.touchViewsDict["\(touch.hash)"] = touchView
+        touchViewsDict["\(touch.hash)"] = touchView
     }
     
     func removeTouchView(for touch: UITouch) {
-        self.touchViewsDict.removeValue(forKey: "\(touch.hash)")
+        touchViewsDict.removeValue(forKey: "\(touch.hash)")
     }
 }
 
@@ -130,16 +130,16 @@ class GSTouchViewQueue {
         
         for _ in 0..<touchesCount {
           let view = createTouchView()
-          self.backingArray.append(view)
+          backingArray.append(view)
         }
     }
     
     func popTouchView() -> UIView {
-        return self.backingArray.removeFirst()
+        return backingArray.removeFirst()
     }
     
     func push(_ touchView: UIView) -> Void {
-        self.backingArray.append(touchView)
+        backingArray.append(touchView)
     }
 }
 
