@@ -129,8 +129,7 @@ class GSTouchViewQueue {
         self.init()
         
         for _ in 0..<touchesCount {
-          let view = UIView(frame: CGRect(x: 0, y: 0, width: 60, height: 60 ) )
-          view.isUserInteractionEnabled = false
+          let view = createTouchView()
           self.backingArray.append(view)
         }
     }
@@ -142,4 +141,10 @@ class GSTouchViewQueue {
     func push(_ touchView: UIView) -> Void {
         self.backingArray.append(touchView)
     }
+}
+
+func createTouchView() -> UIView {
+    let view = UIView(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
+    view.isUserInteractionEnabled = false
+    return view
 }
