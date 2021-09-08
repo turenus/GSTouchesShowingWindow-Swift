@@ -11,7 +11,7 @@ import UIKit
 class GSTouchesShowingController {
     
     var touchViewQueue = GSTouchViewQueue(touchesCount: 8)
-    var touchViewsDict = Dictionary<String, UIView>()
+    var viewFor: [UITouch: UIView] = [:]
     var touchesStartDateMapTable = NSMapTable<UITouch, NSDate>()
     var appearance:TouchAppearance = TouchAppearance()
     
@@ -25,7 +25,7 @@ class GSTouchesShowingController {
         
         touchView.alpha = 0.0
         touchView.transform = CGAffineTransform(scaleX: 1.13, y: 1.13)
-        setTouchView(touchView, for: touch)
+        viewFor[touch] = touchView
         
         UIView.animate(withDuration: 0.1) { 
             touchView.alpha = 1.0
@@ -36,12 +36,12 @@ class GSTouchesShowingController {
     }
     
     public func touchMoved(_ touch: UITouch, view: UIView) -> Void {
-        touchView(for: touch)?.center = touch.location(in: view)
+        viewFor[touch]?.center = touch.location(in: view)
     }
     
     public func touchEnded(_ touch: UITouch, view: UIView) -> Void {
         guard
-            let touchView = touchView(for: touch),
+            let touchView = viewFor[touch],
             let touchStartDate = touchesStartDateMapTable.object(forKey: touch)
         else { return }
         let touchDuration = NSDate().timeIntervalSince(touchStartDate as Date)
@@ -58,7 +58,7 @@ class GSTouchesShowingController {
             touchView.removeFromSuperview()
             touchView.alpha = 1.0
             touchViewQueue.push(touchView)
-            removeTouchView(for: touch)
+            viewFor[touch] = nil
         }
     }
     
@@ -108,18 +108,6 @@ class GSTouchesShowingController {
         }
         
         CATransaction.commit()
-    }
-    
-    func touchView(for touch: UITouch) -> UIView? {
-        return touchViewsDict["\(touch.hash)"]
-    }
-    
-    func setTouchView(_ touchView: UIView, for touch: UITouch) {
-        touchViewsDict["\(touch.hash)"] = touchView
-    }
-    
-    func removeTouchView(for touch: UITouch) {
-        touchViewsDict.removeValue(forKey: "\(touch.hash)")
     }
 }
 
