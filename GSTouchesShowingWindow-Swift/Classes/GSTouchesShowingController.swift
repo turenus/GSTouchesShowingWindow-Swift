@@ -14,6 +14,7 @@ class GSTouchesShowingController {
     var viewFor: [UITouch: UIView] = [:]
     var touchesStartDateMapTable = NSMapTable<UITouch, NSDate>()
     var appearance:TouchAppearance = TouchAppearance()
+    var observerFor: [UITouch: NSKeyValueObservation] = [:]
     
     public func touchBegan(_ touch: UITouch, view: UIView) -> Void {
         let touchView = touchViewQueue.popTouchView()
@@ -33,6 +34,11 @@ class GSTouchesShowingController {
         }
         
         touchesStartDateMapTable.setObject(NSDate(), forKey: touch)
+        
+        observerFor[touch] = touch.observe(\.phase) { [unowned self] touch, _ in
+            guard touch.phase == .ended else { return }
+            touchEnded(touch, view: view)
+        }
     }
     
     public func touchMoved(_ touch: UITouch, view: UIView) -> Void {
@@ -40,6 +46,8 @@ class GSTouchesShowingController {
     }
     
     public func touchEnded(_ touch: UITouch, view: UIView) -> Void {
+        observerFor[touch]?.invalidate()
+        observerFor[touch] = nil
         guard
             let touchView = viewFor[touch],
             let touchStartDate = touchesStartDateMapTable.object(forKey: touch)
