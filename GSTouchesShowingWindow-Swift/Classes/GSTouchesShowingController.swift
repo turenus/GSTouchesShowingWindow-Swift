@@ -17,6 +17,7 @@ class GSTouchesShowingController {
     var observerFor: [UITouch: NSKeyValueObservation] = [:]
     
     public func touchBegan(_ touch: UITouch, view: UIView) -> Void {
+        guard viewFor[touch] == nil else { return touchMoved(touch, view: view) }
         let touchView = touchViewQueue.popTouchView()
         touchView.frame = CGRect(x: 0, y: 0, width: appearance.shortTapFinalCircleRadius, height: appearance.shortTapFinalCircleRadius )
         touchView.layer.cornerRadius = touchView.bounds.size.width / 2.0
