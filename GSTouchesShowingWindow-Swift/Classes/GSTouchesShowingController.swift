@@ -52,6 +52,7 @@ class GSTouchesShowingController {
             let touchView = viewFor[touch],
             let touchStartDate = touchesStartDateMapTable.object(forKey: touch)
         else { return }
+        viewFor[touch] = nil
         let touchDuration = NSDate().timeIntervalSince(touchStartDate as Date)
         touchesStartDateMapTable.removeObject(forKey: touch)
         
@@ -66,7 +67,6 @@ class GSTouchesShowingController {
             touchView.removeFromSuperview()
             touchView.alpha = 1.0
             touchViewQueue.push(touchView)
-            viewFor[touch] = nil
         }
     }
     
